@@ -14,12 +14,13 @@
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.15.0",
     "react-scripts": "^5.0.1",
-    "socket.io-client": "^4.7.2"
+    "socket.io-client": "^4.7.2",
+    "@craco/craco": "^7.1.0"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -42,7 +43,6 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
-    "@craco/craco": "^7.1.0",
     "@emotion/babel-plugin": "^11.11.0"
   }
 }
