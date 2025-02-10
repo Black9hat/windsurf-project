@@ -3,24 +3,24 @@ services:
     name: windsurf-backend
     env: node
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
-        sync: false
+        value: mongodb+srv://mdurgaprasad2422:1IJpgp0ODukxy7aZ@cluster0.kh0fh.mongodb.net/innovators_marketplace?retryWrites=true&w=majority&appName=Cluster0
       - key: JWT_SECRET
-        sync: false
+        value: your_jwt_secret_key
       - key: CLOUDINARY_CLOUD_NAME
-        sync: false
+        value: dk6nfol6b
       - key: CLOUDINARY_API_KEY
-        sync: false
+        value: "512913691958756"
       - key: CLOUDINARY_API_SECRET
-        sync: false
+        value: OTV9_c49lbH6xDVKQZyFCGbkWmo
       - key: STRIPE_SECRET_KEY
         sync: false
 
-  - type: web
+  - type: static
     name: windsurf-frontend
     env: static
     buildCommand: cd client && npm install && npm run build
