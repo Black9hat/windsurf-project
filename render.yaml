@@ -1,8 +1,13 @@
 services:
   - type: web
-    name: windsurf-backend
+    name: windsurf-app
     env: node
-    buildCommand: npm install
+    buildCommand: |
+      npm install
+      cd client
+      npm install
+      npm run build
+      cd ..
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
@@ -19,21 +24,5 @@ services:
         value: OTV9_c49lbH6xDVKQZyFCGbkWmo
       - key: STRIPE_SECRET_KEY
         sync: false
-
-  - type: web
-    name: windsurf-frontend
-    env: node
-    buildCommand: |
-      cd client
-      npm install
-      npm run build
-      mkdir -p /opt/render/project/src/client/build
-      cp -r build/* /opt/render/project/src/client/build/
-    startCommand: cd client && npx serve -s build
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: REACT_APP_API_URL
-        value: https://windsurf-backend.onrender.com
-      - key: REACT_APP_SOCKET_URL
-        value: https://windsurf-backend.onrender.com
+      - key: PORT
+        value: "10000"

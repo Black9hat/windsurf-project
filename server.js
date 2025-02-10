@@ -16,19 +16,39 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.NODE_ENV === 'production' 
+      ? 'https://windsurf-frontend.onrender.com' 
+      : 'http://localhost:3000',
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://windsurf-frontend.onrender.com' 
+    : 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/chat', chatRoutes);
+
+// Serve static files from the React app
+if (process.env.NODE_ENV === 'production') {
+  // Serve any static files
+  app.use(express.static(path.join(__dirname, 'client/build')));
+
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -50,6 +70,7 @@ io.on('connection', (socket) => {
 
     socket.on('join_chat', (roomId) => {
         socket.join(roomId);
+        console.log(`Client joined room: ${roomId}`);
     });
 
     socket.on('send_message', (data) => {
@@ -60,20 +81,6 @@ io.on('connection', (socket) => {
         console.log('Client disconnected');
     });
 });
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/chats', chatRoutes);
-
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('client/build'));
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    });
-}
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
