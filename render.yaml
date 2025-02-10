@@ -3,18 +3,40 @@ services:
     name: windsurf-app
     env: node
     buildCommand: |
+      # Install backend dependencies
       npm install
+      
+      # Build frontend
       cd client
       npm install
-      npm run build
+      CI=false npm run build
+      
+      # Debug info
+      echo "===== DEBUGGING INFO ====="
+      echo "Current location:"
+      pwd
+      echo "Build folder contents:"
+      ls -la build
+      
+      # Create and copy to specific location
+      mkdir -p /opt/render/project/src/client/build
+      cp -r build/* /opt/render/project/src/client/build/
+      
+      # Verify copy
+      echo "Destination folder contents:"
+      ls -la /opt/render/project/src/client/build/
+      
+      # Return to root
       cd ..
-      ls -la
-      ls -la client/build
     startCommand: |
-      echo "Current directory contents:"
-      ls -la
+      # Verify files before starting
+      echo "===== STARTUP VERIFICATION ====="
+      echo "Current directory:"
+      pwd
       echo "Client build directory contents:"
       ls -la client/build
+      
+      # Start server
       node server.js
     envVars:
       - key: NODE_ENV
@@ -33,3 +55,5 @@ services:
         sync: false
       - key: PORT
         value: "10000"
+      - key: CI
+        value: "false"
