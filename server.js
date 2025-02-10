@@ -16,39 +16,42 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? 'https://windsurf-frontend.onrender.com' 
-      : 'http://localhost:3000',
+    origin: '*',
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://windsurf-frontend.onrender.com' 
-    : 'http://localhost:3000',
+  origin: '*',
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the React app
+console.log('Current directory:', __dirname);
+console.log('Build path:', path.join(__dirname, 'client', 'build'));
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+// Handle React routing, return all requests to React app
+app.get('*', function(req, res) {
+  const indexPath = path.join(__dirname, 'client', 'build', 'index.html');
+  console.log('Trying to serve:', indexPath);
+  if (require('fs').existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('Build files not found. Make sure the build process completed successfully.');
+  }
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/chat', chatRoutes);
-
-// Serve static files from the React app
-if (process.env.NODE_ENV === 'production') {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, 'client/build')));
-
-  // Handle React routing, return all requests to React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

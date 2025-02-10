@@ -8,7 +8,14 @@ services:
       npm install
       npm run build
       cd ..
-    startCommand: node server.js
+      ls -la
+      ls -la client/build
+    startCommand: |
+      echo "Current directory contents:"
+      ls -la
+      echo "Client build directory contents:"
+      ls -la client/build
+      node server.js
     envVars:
       - key: NODE_ENV
         value: production
