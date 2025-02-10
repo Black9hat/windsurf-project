@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>Innovators Marketplace</title>
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="logo">
+                <h1>Innovators Marketplace</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#" id="loginBtn">Login</a>
+                <a href="#" id="signupBtn">Sign Up</a>
+                <a href="#" id="dashboardBtn" class="hidden">Dashboard</a>
+                <a href="#" id="cartBtn"><i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span></a>
+            </div>
+        </nav>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#projects">Browse Projects</a></li>
+                <li><a href="#submit-project">Submit Project</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="signup">Sign Up</button>
+            </div>
+            <div id="loginForm" class="auth-form active">
+                <h2>Login</h2>
+                <form>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div id="signupForm" class="auth-form">
+                <h2>Sign Up</h2>
+                <form>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <select required>
+                        <option value="">Select Account Type</option>
+                        <option value="innovator">Innovator</option>
+                        <option value="buyer">Buyer</option>
+                    </select>
+                    <button type="submit">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="dashboardModal" class="modal">
+        <div class="modal-content dashboard">
+            <span class="close">&times;</span>
+            <div class="dashboard-header">
+                <h2>Dashboard</h2>
+                <div class="dashboard-tabs">
+                    <button class="dashboard-tab active" data-tab="my-projects">My Projects</button>
+                    <button class="dashboard-tab" data-tab="messages">Messages</button>
+                    <button class="dashboard-tab" data-tab="sales">Sales</button>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <div id="my-projects" class="dashboard-section active">
+                    <h3>My Projects</h3>
+                    <div class="project-grid"></div>
+                </div>
+                <div id="messages" class="dashboard-section">
+                    <h3>Messages</h3>
+                    <div class="message-list"></div>
+                </div>
+                <div id="sales" class="dashboard-section">
+                    <h3>Sales History</h3>
+                    <div class="sales-chart"></div>
+                    <div class="sales-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Shopping Cart</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal">Total: $0</div>
+            <div id="payment-form">
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+            <button id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <div class="chat-header">
+            <h3>Messages</h3>
+            <button class="minimize-chat">−</button>
+        </div>
+        <div class="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type a message...">
+            <button><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <main>
+        <section id="search-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search projects...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="technology">Technology</option>
+                    <option value="science">Science</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="other">Other</option>
+                </select>
+                <button id="searchBtn">Search</button>
+            </div>
+        </section>
+
+        <section id="categories">
+            <h2>Browse by Category</h2>
+            <div class="category-grid">
+                <div class="category-card" data-category="technology">
+                    <i class="fas fa-microchip"></i>
+                    <h3>Technology</h3>
+                </div>
+                <div class="category-card" data-category="science">
+                    <i class="fas fa-flask"></i>
+                    <h3>Science</h3>
+                </div>
+                <div class="category-card" data-category="engineering">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Engineering</h3>
+                </div>
+                <div class="category-card" data-category="other">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Other</h3>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>Featured Projects</h2>
+            <div class="project-list">
+                <!-- Projects will be dynamically added here -->
+            </div>
+        </section>
+
+        <section id="submit-project" class="hidden">
+            <h2>Submit Your Project</h2>
+            <form id="projectSubmissionForm">
+                <input type="text" placeholder="Project Title" required>
+                <textarea placeholder="Project Description" required></textarea>
+                <input type="number" placeholder="Price ($)" required>
+                <select required>
+                    <option value="">Select Category</option>
+                    <option value="technology">Technology</option>
+                    <option value="science">Science</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="tag-input">
+                    <input type="text" placeholder="Add tags (comma-separated)">
+                    <div class="tags"></div>
+                </div>
+                <input type="file" accept="image/*" multiple required>
+                <button type="submit">Submit Project</button>
+            </form>
+        </section>
+
+        <section id="about">
+            <h2>About Us</h2>
+            <div class="about-content">
+                <p>We connect innovative minds with potential investors and buyers. Our platform enables creators to showcase their projects and find the right audience for their innovations.</p>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form id="contactForm">
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#categories">Categories</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form id="newsletterForm">
+                    <input type="email" placeholder="Your email">
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <p>&copy; 2025 Innovators Marketplace. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
