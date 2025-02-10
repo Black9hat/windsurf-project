@@ -8,36 +8,35 @@ services:
       
       # Build frontend
       cd client
-      npm install
+      npm install --legacy-peer-deps
       CI=false npm run build
       
       # Debug info
       echo "===== DEBUGGING INFO ====="
       echo "Current location:"
       pwd
+      echo "Client directory contents:"
+      ls -la
       echo "Build folder contents:"
-      ls -la build
+      ls -la build || echo "Build folder not found!"
       
-      # Create and copy to specific location
-      mkdir -p /opt/render/project/src/client/build
-      cp -r build/* /opt/render/project/src/client/build/
-      
-      # Verify copy
-      echo "Destination folder contents:"
-      ls -la /opt/render/project/src/client/build/
-      
-      # Return to root
+      # Ensure parent directories exist
       cd ..
-    startCommand: |
-      # Verify files before starting
-      echo "===== STARTUP VERIFICATION ====="
-      echo "Current directory:"
-      pwd
-      echo "Client build directory contents:"
-      ls -la client/build
+      echo "Project root contents before copy:"
+      ls -la
       
-      # Start server
-      node server.js
+      # Remove existing build directory if it exists
+      rm -rf client/build
+      
+      # Move build directory to correct location
+      cd client
+      mkdir -p build
+      mv build/* .
+      cd ..
+      
+      echo "Final client/build contents:"
+      ls -la client/build
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -51,8 +50,6 @@ services:
         value: "512913691958756"
       - key: CLOUDINARY_API_SECRET
         value: OTV9_c49lbH6xDVKQZyFCGbkWmo
-      - key: STRIPE_SECRET_KEY
-        sync: false
       - key: PORT
         value: "10000"
       - key: CI
