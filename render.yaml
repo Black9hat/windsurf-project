@@ -3,40 +3,41 @@ services:
     name: windsurf-app
     env: node
     buildCommand: |
-      # Install backend dependencies
+      # Install root dependencies
       npm install
       
       # Build frontend
       cd client
+      export CI=false
+      export GENERATE_SOURCEMAP=false
       npm install --legacy-peer-deps
-      CI=false npm run build
+      npm run build
       
-      # Debug info
-      echo "===== DEBUGGING INFO ====="
-      echo "Current location:"
-      pwd
-      echo "Client directory contents:"
-      ls -la
-      echo "Build folder contents:"
-      ls -la build || echo "Build folder not found!"
+      # Debug build directory
+      echo "Build directory contents:"
+      ls -la build || echo "Build directory not found!"
       
-      # Ensure parent directories exist
+      # Ensure build directory exists in the correct location
       cd ..
-      echo "Project root contents before copy:"
-      ls -la
-      
-      # Remove existing build directory if it exists
       rm -rf client/build
+      mkdir -p client/build
+      mv client/build/* client/build/ || echo "No files to move"
       
-      # Move build directory to correct location
-      cd client
-      mkdir -p build
-      mv build/* .
-      cd ..
+      # Debug final location
+      echo "Final build directory contents:"
+      ls -la client/build || echo "Final build directory not found!"
+    startCommand: |
+      # Debug directory structure
+      echo "Current working directory: $(pwd)"
+      echo "Directory contents:"
+      ls -la
+      echo "Client directory contents:"
+      ls -la client
+      echo "Build directory contents:"
+      ls -la client/build || echo "Build directory not found"
       
-      echo "Final client/build contents:"
-      ls -la client/build
-    startCommand: node server.js
+      # Start the server
+      node server.js
     envVars:
       - key: NODE_ENV
         value: production
