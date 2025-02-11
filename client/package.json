@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "set \"CI=false\" && set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "serve": "serve -s build"
@@ -41,9 +41,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "http://localhost:5000",
-  "devDependencies": {
-    "@emotion/babel-plugin": "^11.11.0"
   }
 }
